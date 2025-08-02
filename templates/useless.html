@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UselessGPT</title>
+    <link rel="stylesheet" href="/static/useless.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <button id="report-bug" class="report-bug">🐛 Report Bug</button>
+    <div id="selection-screen">
+        <h1>CATHI v1.0</h1>
+        <p>Choose your AI companion or start a conversation</p>
+        <div id="personality-grid">
+            <div class="card" data-mode="general">
+                <img src="static/logos/chatt.png" class="iconss">
+                <h2>GeneralGPT</h2>
+                <p>Helpful assistant for everything</p>
+            </div>
+            <div class="card" data-mode="roast">
+                <img src="static/logos/roastt.png" class="iconss">
+                <h2>RoastGPT</h2>
+                <p>Sarcastic and witty AI that roasts everything</p>
+            </div>
+            <div class="card" data-mode="baby">
+                <img src="static/logos/babyy.png" class="iconss">
+                <h2>BabyGPT</h2>
+                <p>Adorable AI that speaks like a baby</p>
+            </div>
+            <div class="card" data-mode="conspiracy">
+                <img src="static/logos/conspiracy.png" class="iconss">
+                <h2>ConspiracyGPT</h2>
+                <p>AI that sees conspiracies everywhere</p>
+            </div>
+            <div class="card" data-mode="sadboi">
+                <img src="static/logos/sad.png" class="iconss">
+                <h2>SadBoiGPT</h2>
+                <p>Melancholic AI with deep emotions</p>
+            </div>
+            <div class="card" game-mode="minigame">
+                <img src="static/logos/minigames.png" class="iconss">
+                <h2>Minigames</h2>
+                <p>Fun games to play while chatting</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="chat-screen" class="hidden">
+        <div id="sidebar">
+            <button id="back-button">← Back</button>
+            <ul id="mode-list">
+                <li data-mode="general">💬 GeneralGPT</li>
+                <li data-mode="roast">🔥 RoastGPT</li>
+                <li data-mode="baby">👶 BabyGPT</li>
+                <li data-mode="conspiracy">🛸 ConspiracyGPT</li>
+                <li data-mode="sadboi">💔 SadBoiGPT</li>
+            </ul>
+        </div>
+        <div id="chat-container">
+            <div id="chat-header"></div>
+            <div id="chat-box"></div>
+            <div id="chat-input">
+                <input type="text" id="message-input" placeholder="Type your message...">
+                <button id="send-button">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const cards = document.querySelectorAll('.card');
+        const selectionScreen = document.getElementById('selection-screen');
+        const chatScreen = document.getElementById('chat-screen');
+        const chatHeader = document.getElementById('chat-header');
+        const chatBox = document.getElementById('chat-box');
+        const sendBtn = document.getElementById('send-button');
+        const msgInput = document.getElementById('message-input');
+    
+        const backBtn = document.getElementById('back-button');
+        const modeList = document.getElementById('mode-list');
+        const body = document.body;
+
+        const bugs = [
+            "Feature, not a bug 😎",
+            "You think you can report 💀",
+            "Send help... or snacks 🍕",
+            "No bugs here, only vibes 🌈"
+        ];
+        msgInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendBtn.click();
+        });
+        // Report bug button
+        document.getElementById('report-bug').addEventListener('click', () => {
+          alert(bugs[Math.floor(Math.random() * bugs.length)]);
+        });
+        let currentMode = "general";
+
+
+        const modeThemes = {
+            general: "#7f5af0",
+            roast: "#f43f5e",
+            baby: "#ec4899",
+            conspiracy: "#10b981",
+            sadboi: "#6366f1",
+            minigame: "#fbbf24"
+        };
+
+        cards.forEach(card => {
+            card.addEventListener('click', () => {
+                const gameMode = card.getAttribute('game-mode');
+                if (gameMode === 'minigame') {
+                    window.location.href = "/minigames";
+                } else {
+                    currentMode = card.dataset.mode;
+                    openChat(currentMode);
+                }
+            });
+        });
+
+        modeList.querySelectorAll('li').forEach(li => {
+            li.addEventListener('click', () => {
+                const mode = li.dataset.mode;
+                openChat(mode);  // cleaner than repeating logic
+            });
+            
+        });
+
+        backBtn.addEventListener('click', () => {
+            chatScreen.classList.add('hidden');
+            selectionScreen.classList.remove('hidden');
+            body.style.background = originalGradient;
+            
+        });
+
+        const originalGradient = getComputedStyle(body).background;
+
+        function openChat(mode) {
+
+            selectionScreen.classList.add('hidden');
+            chatScreen.classList.remove('hidden');
+            currentMode = mode;
+
+            const modeMap = {
+                general: "💬 GeneralGPT",
+                roast: "🔥 RoastGPT",
+                baby: "👶 BabyGPT",
+                conspiracy: "🛸 ConspiracyGPT",
+                sadboi: "💔 SadBoiGPT",
+                minigame: "🎮 Minigames"
+            };
+
+            chatHeader.textContent = modeMap[mode] || "💬 GeneralGPT";
+            updateTheme(mode);
+            chatBox.innerHTML = "";
+            
+        }
+
+        function updateTheme(mode) {
+            const color = modeThemes[mode] || "#7f5af0";
+            body.style.background = `linear-gradient(to right, ${color}, #111827)`;
+            
+        }
+
+        sendBtn.addEventListener('click', async () => {
+            const message = msgInput.value.trim();
+            if (!message) return;
+
+            msgInput.value = "";
+            chatBox.innerHTML += `<div class='user-msg'>${message}</div>`;
+            chatBox.innerHTML += `<div class='bot-msg typing-indicator' id="typing">Typing...</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            const res = await fetch('/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mode: currentMode, message })
+            });
+
+            const data = await res.json();
+
+            const typingDiv = document.getElementById('typing');
+            if (typingDiv) typingDiv.remove();
+
+            chatBox.innerHTML += `<div class='bot-msg'>${data.response}</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+            
+        });
+    </script>
+</body>
+</html>
